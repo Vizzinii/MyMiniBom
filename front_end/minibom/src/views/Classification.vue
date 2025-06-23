@@ -1,23 +1,24 @@
 <template>
-  <el-card class="page-container">
-    <template #header>
-      <div class="header">
-        <span>分类管理</span>
-        <div class="extra">
-          <el-button type="primary" @click="onAddClassification">添加分类</el-button>
-        </div>
+  <div class="page-wrapper">
+    <!-- 顶部操作区 -->
+    <div class="top-action-bar">
+      <h2 class="page-title">分类管理</h2>
+      <div class="actions">
+        <!-- 搜索表单 -->
+        <el-form :inline="true" class="search-form">
+          <el-form-item label="名称/编码：">
+            <el-input v-model="searchQuery" placeholder="请输入分类名称或编码" @keyup.enter="onSearch" />
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="onSearch">搜索</el-button>
+            <el-button @click="onReset">重置</el-button>
+          </el-form-item>
+        </el-form>
+        <el-button class="add-button" @click="onAddClassification">
+          <el-icon><Plus /></el-icon><span>添加分类</span>
+        </el-button>
       </div>
-    </template>
-    <!-- 搜索表单 -->
-    <el-form inline>
-      <el-form-item label="名称/编码：">
-        <el-input v-model="searchQuery" placeholder="请输入分类名称或编码" @keyup.enter="onSearch" />
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" @click="onSearch">搜索</el-button>
-        <el-button @click="onReset">重置</el-button>
-      </el-form-item>
-    </el-form>
+    </div>
     <!-- 分类表格 -->
     <el-table
         v-loading="loading"
@@ -107,12 +108,12 @@
                 </span>
       </template>
     </el-dialog>
-  </el-card>
+  </div>
 </template>
 
 <script setup>
 import { ref, onMounted, nextTick } from 'vue'
-import { Edit, Delete, Link } from '@element-plus/icons-vue'
+import { Edit, Delete, Link, Plus } from '@element-plus/icons-vue'
 import {
   classificationListService,
   classificationCreateService,
@@ -313,38 +314,142 @@ const onLinkSubmit = async () => {
 };
 </script>
 
-<style lang="scss" scoped>
-.page-container {
-  min-height: 100%;
-  box-sizing: border-box;
-  .header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
+<style scoped>
+.page-wrapper {
+  position: relative;
+  z-index: 1;
 }
 
-.attribute-list-container {
-  padding: 10px;
-  border: 1px solid #eee;
-  border-radius: 4px;
-  margin-bottom: 20px;
+.top-action-bar {
   display: flex;
-  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.page-title {
+  font-size: 28px;
+  font-weight: 600;
+  color: #333;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.search-form {
+  display: flex;
   gap: 10px;
 }
-
-.attribute-checkbox {
-  margin: 0;
+.search-form :deep(.el-form-item) {
+  margin-bottom: 0;
+}
+.search-form :deep(.el-form-item__label) {
+  color: #606266;
+  font-weight: 600;
 }
 
-.linked-attribute {
-  background-color: #f5f7fa !important;
-  color: #909399 !important;
-  border-color: #dcdfe6 !important;
+/* 按钮样式 */
+.tech-button, .search-button, .reset-button, .add-button {
+  border-radius: 6px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  border: none;
+  padding: 10px 20px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-.linked-tag {
-  margin-left: 8px;
+.search-button, .add-button {
+  background-color: #409EFF;
+  color: white;
 }
-</style> 
+.search-button:hover, .add-button:hover {
+  background-color: #66b1ff;
+  box-shadow: 0 4px 8px rgba(64, 158, 255, 0.2);
+}
+
+.reset-button {
+  background-color: #f5f7fa;
+  color: #606266;
+  border: 1px solid #dcdfe6;
+}
+
+.reset-button:hover {
+  background-color: #e4e7ed;
+}
+
+.add-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  font-weight: 600;
+  color: #000;
+  background: linear-gradient(90deg, #00bfff 0%, #0affa7 100%);
+  transition: all 0.3s ease;
+}
+.add-button:hover {
+  filter: brightness(1.2);
+  box-shadow: 0 0 15px rgba(10, 255, 167, 0.6);
+}
+
+/* 表格样式 */
+.tech-table {
+  background: transparent !important;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #e4e7ed;
+}
+.tech-table :deep(th.el-table__cell) {
+  background: rgba(0, 191, 255, 0.15) !important;
+  color: #333;
+  font-weight: 600;
+  border-bottom: 1px solid #409eff;
+}
+.tech-table :deep(td.el-table__cell) {
+  border-bottom: 1px solid #e4e7ed;
+}
+.tech-table :deep(tr) {
+  background: transparent !important;
+  color: #606266;
+  transition: background-color 0.3s;
+}
+.tech-table :deep(tr:hover > td.el-table__cell) {
+  background: rgba(0, 191, 255, 0.1) !important;
+}
+.tech-table :deep(.el-table__inner-wrapper::before) {
+  display: none;
+}
+
+/* 表格内操作按钮 */
+.action-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+.action-button {
+  font-size: 18px;
+  transition: all 0.2s;
+  padding: 4px;
+}
+.action-button.edit { color: #409eff; }
+.action-button.delete { color: #ff6b6b; }
+.action-button:hover {
+  transform: scale(1.2);
+  filter: drop-shadow(0 0 5px currentColor);
+}
+</style>
+
+<!-- 全局样式 -->
+<style>
+.el-message-box.tech-messagebox {
+  background: #fff !important;
+  border: 1px solid #e4e7ed !important;
+}
+.tech-messagebox .el-message-box__title,
+.tech-messagebox .el-message-box__content {
+  color: #333 !important;
+}
+</style>
