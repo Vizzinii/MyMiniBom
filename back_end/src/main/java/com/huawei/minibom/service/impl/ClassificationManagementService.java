@@ -62,7 +62,7 @@ public class ClassificationManagementService implements IClassificationManagemen
         ClassificationNodeCreateDTO createDTO = new ClassificationNodeCreateDTO();
         BeanUtils.copyProperties(vo, createDTO);
         createDTO.setBusinessCode(vo.getCode());
-        
+
         // 如果英文名为空，则默认使用中文名
         if (!StringUtils.hasText(vo.getEnglishName())) {
             createDTO.setNameEn(vo.getName());
@@ -129,7 +129,7 @@ public class ClassificationManagementService implements IClassificationManagemen
                 BeanUtils.copyProperties(node, vo);
                 vo.setId(node.getId().toString());
                 vo.setCode(node.getBusinessCode());
-                
+
                 // 3. Data Cleansing: Default englishName to name if it's blank
                 vo.setEnglishName(StringUtils.hasText(node.getNameEn()) ? node.getNameEn() : node.getName());
 
@@ -186,17 +186,17 @@ public class ClassificationManagementService implements IClassificationManagemen
             .filter(attrId -> attrId != null && !attrId.isEmpty())
             .map(attrId -> {
                 EXADefinitionLinkCreateDTO linkCreateDTO = new EXADefinitionLinkCreateDTO();
-                
+
                 ObjectReferenceParamDTO source = new ObjectReferenceParamDTO();
                 source.setClazz("EXADefinition");
                 source.setId(Long.valueOf(attrId));
                 linkCreateDTO.setSource(source);
-                
+
                 ObjectReferenceParamDTO target = new ObjectReferenceParamDTO();
                 target.setClazz("ClassificationNode");
                 target.setId(classificationId);
                 linkCreateDTO.setTarget(target);
-                
+
                 return linkCreateDTO;
             }).collect(Collectors.toList());
 
@@ -255,44 +255,44 @@ public class ClassificationManagementService implements IClassificationManagemen
             // 2. 查询关联的属性链接
             // 参考师兄项目的做法，使用 find 方法而不是 query 方法
             List<EXADefinitionLinkQueryViewDTO> links = null;
-            
+
             try {
                 logger.info("使用 find 方法查询分类ID: {} 的关联属性链接", id);
-                
+
                 QueryRequestVo linkQuery = new QueryRequestVo();
                 QueryCondition linkCondition = new QueryCondition();
                 linkCondition.addCondition("target.id", ConditionType.EQUAL, Long.valueOf(id));
                 linkCondition.setJoiner("or");  // 参考师兄项目的做法
                 linkQuery.setFilter(linkCondition);
-                
+
                 // 使用 find 方法而不是 query 方法
                 List<EXADefinitionLinkViewDTO> findLinks = exaDefinitionLinkDelegator.find(linkQuery, new RDMPageVO());
-                
+
                 logger.info("find 方法查询成功，找到 {} 个关联链接", findLinks != null ? findLinks.size() : 0);
-                
+
                 // 收集属性ID，避免复杂的类型转换
                 List<Long> linkedAttributeIds = new ArrayList<>();
                 if (findLinks != null) {
                     for (EXADefinitionLinkViewDTO findLink : findLinks) {
-                        logger.info("找到关联链接 - Source ID: {}, Target ID: {}", 
+                        logger.info("找到关联链接 - Source ID: {}, Target ID: {}",
                             findLink.getSource() != null ? findLink.getSource().getId() : "null",
                             findLink.getTarget() != null ? findLink.getTarget().getId() : "null");
-                        
+
                         // 收集属性ID（source是属性，target是分类）
                         if (findLink.getSource() != null && findLink.getSource().getId() != null) {
                             linkedAttributeIds.add(findLink.getSource().getId());
                         }
                     }
                 }
-                
+
                 logger.info("提取到的已关联属性ID: {}", linkedAttributeIds);
-                
+
                 if (linkedAttributeIds.isEmpty()) {
                     logger.info("该分类没有关联任何属性");
                     vo.setAttributes(Collections.emptyList());
                     return vo;
                 }
-                
+
                 // 只查询已关联的属性详情
                 List<AttributeQueryViewVO> attributeVOs = new ArrayList<>();
                 for (Long attributeId : linkedAttributeIds) {
@@ -301,7 +301,7 @@ public class ClassificationManagementService implements IClassificationManagemen
                         PersistObjectIdDecryptDTO attrDecryptDTO = new PersistObjectIdDecryptDTO();
                         attrDecryptDTO.setId(attributeId);
                         com.huawei.innovation.rdm.xdm.dto.entity.EXADefinitionViewDTO attrDto = exaDefinitionDelegator.get(attrDecryptDTO);
-                        
+
                         if (attrDto != null) {
                             AttributeQueryViewVO attrVo = new AttributeQueryViewVO();
                             String[] ignoreProperties = new String[]{"folder", "id"};
@@ -317,7 +317,7 @@ public class ClassificationManagementService implements IClassificationManagemen
                                 folder.setBusinessCode(eFolder.getBusinessCode());
                                 attrVo.setFolder(folder);
                             }
-                            
+
                             attributeVOs.add(attrVo);
                             logger.info("获取已关联属性详情: {} ({})", attrDto.getName(), attrDto.getId());
                         }
@@ -329,7 +329,7 @@ public class ClassificationManagementService implements IClassificationManagemen
                 vo.setAttributes(attributeVOs);
                 logger.info("返回分类详情，包含 {} 个已关联属性", attributeVOs.size());
                 return vo;
-                
+
             } catch (Exception e) {
                 logger.error("查询分类详情失败: {}", e.getMessage());
                 vo.setAttributes(Collections.emptyList());
@@ -344,4 +344,3 @@ public class ClassificationManagementService implements IClassificationManagemen
         }
     }
 }
- 

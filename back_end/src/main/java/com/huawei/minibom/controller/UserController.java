@@ -13,7 +13,6 @@ import com.huawei.minibom.vo.UserRegisterInfoVO;
 import com.huawei.innovation.rdm.minibomdatamodel.dto.entity.UserViewDTO;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -35,9 +34,6 @@ public class UserController {
     @Autowired
     private IUserService userService;
 
-    @Autowired
-    private BCryptPasswordEncoder passwordEncoder;
-
     /**
      * 用户登录
      * 
@@ -54,8 +50,8 @@ public class UserController {
         }
 
         UserViewDTO userViewDTO = userViewDTOS.get(0);
-        // 使用 BCryptPasswordEncoder 验证密码
-        if (!passwordEncoder.matches(loginParamVO.getPassword(), userViewDTO.getPasswords())) {
+        // 注意：这里使用getPasswords()而不是getPassword()，因为我们的设计态User实体密码属性是Passwords
+        if (!loginParamVO.getPassword().equals(userViewDTO.getPasswords())) {
             return new ReturnResult(ReturnCode.USER_OR_PASSWORD_NOT_MATCH, "用户名或密码错误");
         }
 

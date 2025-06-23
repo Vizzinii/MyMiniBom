@@ -16,7 +16,6 @@ import com.huawei.innovation.rdm.minibomdatamodel.dto.entity.UserViewDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -36,9 +35,6 @@ public class UserService implements IUserService {
 
     @Autowired
     private UserDelegator userDelegator;
-
-    @Autowired
-    private BCryptPasswordEncoder passwordEncoder;
 
     // 用户名正则表达式：6-32位字母数字组合
     private static final String NAME_REGEX = "^[a-zA-Z0-9]{6,32}$";
@@ -79,8 +75,8 @@ public class UserService implements IUserService {
         try {
             UserCreateDTO userCreateDTO = new UserCreateDTO();
             userCreateDTO.setName(userRegisterInfoVO.getName());
-            // 加密后存储密码
-            userCreateDTO.setPasswords(passwordEncoder.encode(userRegisterInfoVO.getPassword()));
+            // 注意：这里使用setPasswords而不是setPassword，因为我们的设计态User实体密码属性是Passwords
+            userCreateDTO.setPasswords(userRegisterInfoVO.getPassword());
             userCreateDTO.setEmail(userRegisterInfoVO.getEmail());
             userCreateDTO.setTelephone(userRegisterInfoVO.getTelephone());
             
