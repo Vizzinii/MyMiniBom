@@ -11,10 +11,11 @@ export default defineConfig({
     }
   },
   server: {
+    port: 5173,
     proxy: {
       '/api': {
         //localhost:8080
-        target: 'http://localhost:8080', // 替换为你的后端服务地址
+        target: 'http://localhost:8080', // 代理到后端
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, '')
       }
