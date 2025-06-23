@@ -53,6 +53,7 @@
             <el-select v-model="attributeModel.type" placeholder="请选择" :disabled="!!attributeModel.id" style="width: 100%;">
               <el-option label="字符串 (STRING)" value="STRING"></el-option>
               <el-option label="数值型 (DECIMAL)" value="DECIMAL"></el-option>
+              <el-option label="文本型 (TEXT)" value="TEXT"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="描述">
