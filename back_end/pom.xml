@@ -30,6 +30,12 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
+        <!-- Spring Security 依赖 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -75,7 +81,7 @@
             <systemPath>${idme.jar.path}/${idme.app.name}.api-1.0.0-optimization-SNAPSHOT.jar</systemPath>
         </dependency>
 
-        <!-- 必要的额外依赖 - 按师兄的配置 -->
+        <!-- 必要的额外依赖 -->
         <dependency>
             <groupId>javax.validation</groupId>
             <artifactId>validation-api</artifactId>
