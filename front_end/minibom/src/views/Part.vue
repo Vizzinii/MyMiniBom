@@ -1,7 +1,9 @@
 <template>
   <div class="page-wrapper">
-    <!-- 顶部操作区 -->    <div class="top-action-bar">
-      <h2 class="page-title">Part&BOM管理</h2>      <div class="actions">
+    <!-- 顶部操作区 -->
+    <div class="top-action-bar">
+      <h2 class="page-title">Part&BOM管理</h2>
+      <div class="actions">
         <el-button class="add-button" @click="showBatchAddDialog">
           <el-icon><Plus /></el-icon><span>批量添加BOM</span>
         </el-button>
@@ -12,7 +14,8 @@
           <el-icon><Setting /></el-icon><span>测试BOM接口</span>
         </el-button>
       </div>
-    </div>    <!-- 查找功能表单 -->
+    </div>
+    <!-- 查找功能表单 -->
     <el-form :inline="true" class="search-form" style="margin-bottom: 16px;">
       <el-form-item label="名称">
         <el-input v-model="searchParams.name" placeholder="请输入名称"></el-input>
@@ -29,51 +32,55 @@
         <el-select v-model="searchParams.partType" placeholder="请选择装配模式" clearable style="width: 180px;">
           <el-option v-for="item in partTypeEnum" :key="item.value" :label="item.label" :value="item.value" />
         </el-select>
-      </el-form-item>      <el-form-item>
+      </el-form-item>
+      <el-form-item>
         <el-button type="primary" @click="onSearch">搜索</el-button>
-        <el-button @click="onReset">重置</el-button>        <el-button @click="handleRetry" :loading="loading">重新加载</el-button>
+        <el-button @click="onReset">重置</el-button>
+        <el-button @click="handleRetry" :loading="loading">重新加载</el-button>
         <el-button @click="preloadPartNames" :loading="loading" type="info">预加载Part缓存</el-button>
-      </el-form-item></el-form>    <!-- Part列表 -->
+      </el-form-item>
+    </el-form>
+    <!-- Part列表 -->
     <el-table :data="partList" style="width: 100%" v-loading="loading" class="tech-table">
       <el-table-column prop="name" label="Part Name" sortable></el-table-column>
-      <el-table-column 
-        prop="masterId" 
-        label="masterId" 
+      <el-table-column
+        prop="masterId"
+        label="masterId"
         sortable
         :formatter="row => String(row.masterId ?? '')"
         show-overflow-tooltip
-        width="240"
+        width="200"
         align="left"
       ></el-table-column>
-      <el-table-column prop="description" label="description" width="260"></el-table-column>
-      <el-table-column label="操作" width="400" align="center">
+      <el-table-column prop="description" label="description" width="200"></el-table-column>
+      <el-table-column label="操作" width="700" align="center">
         <template #default="{ row }">
           <div class="action-buttons">
-            <el-tooltip content="查看" placement="top">
+            <el-tooltip :hide-after="0" content="查看" placement="top">
               <el-button link :icon="View" class="action-button view" @click="showDetailDialog(row)"></el-button>
             </el-tooltip>
-            <el-tooltip content="检出" placement="top">
+            <el-tooltip :hide-after="0" content="检出" placement="top">
               <el-button link :icon="Lock" class="action-button checkout" @click="onCheckout(row)"></el-button>
             </el-tooltip>
-            <el-tooltip content="撤销检出" placement="top">
+            <el-tooltip :hide-after="0" content="撤销检出" placement="top">
               <el-button link :icon="Unlock" class="action-button undo-checkout" @click="onUndoCheckout(row)"></el-button>
             </el-tooltip>
-            <el-tooltip content="编辑" placement="top">
+            <el-tooltip :hide-after="0" content="编辑" placement="top">
               <el-button link :icon="Edit" class="action-button edit" @click="showEditDialog(row)"></el-button>
             </el-tooltip>
-            <el-tooltip content="删除" placement="top">
+            <el-tooltip :hide-after="0" content="删除" placement="top">
               <el-button link :icon="Delete" class="action-button delete" @click="onDelete(row)"></el-button>
             </el-tooltip>
-            <el-tooltip content="BOM结构树" placement="top">
+            <el-tooltip :hide-after="0" content="BOM结构树" placement="top">
               <el-button link :icon="Share" class="action-button tree" @click="showBomTree(row)">结构树</el-button>
             </el-tooltip>
-            <el-tooltip content="BOM清单" placement="top">
+            <el-tooltip :hide-after="0" content="BOM清单" placement="top">
               <el-button link :icon="List" class="action-button list" @click="showBomList(row)">清单</el-button>
             </el-tooltip>
-            <el-tooltip content="父级使用" placement="top">
+            <el-tooltip :hide-after="0" content="父级使用" placement="top">
               <el-button link :icon="TopRight" class="action-button usage" @click="showWhereUsed(row)">父级使用</el-button>
             </el-tooltip>
-            <el-tooltip content="添加BOM关系" placement="top">
+            <el-tooltip :hide-after="0" content="添加BOM关系" placement="top">
               <el-button link :icon="Plus" class="action-button add" @click="showAddBomDialog(row)">添加BOM</el-button>
             </el-tooltip>
           </div>
@@ -88,9 +95,10 @@
       @current-change="handlePageChange"
       @size-change="handleSizeChange"
       style="margin-top: 16px; text-align: right;"
-    />    <!-- 添加/编辑Part的弹窗 -->
+    />
+    <!-- 添加/编辑Part的弹窗 -->
     <el-dialog v-model="dialogVisible" :title="dialogTitle" width="40%" class="tech-dialog">
-      <el-form :model="partModel" :rules="formRules" ref="formRef" label-width="100px" label-position="top">
+      <el-form :model="partModel" :rules="formRules" ref="formRef" label-width="60px" label-position="top">
         <el-form-item label="Part Name" prop="name" required>
           <el-input v-model="partModel.name"></el-input>
         </el-form-item>
@@ -117,7 +125,8 @@
           <el-button class="add-button" :disabled="!formValid" @click="onSubmit">确 认</el-button>
         </span>
       </template>
-    </el-dialog><el-dialog v-model="detailDialogVisible" title="Part详情" width="40%">
+    </el-dialog>
+    <el-dialog v-model="detailDialogVisible" title="Part详情" width="40%">
       <div v-if="partDetail">
         <p><b>masterId:</b> {{ String(partDetail.masterId) }}</p>
         <p><b>name:</b> {{ partDetail.name }}</p>
@@ -141,13 +150,15 @@
 
     <!-- BOM结构树弹窗 -->
     <el-dialog v-model="bomTreeDialogVisible" title="BOM结构树" width="80%" class="tech-dialog">
-      <div v-if="bomTreeData">        <div class="tree-header">
+      <div v-if="bomTreeData">
+        <div class="tree-header">
           <h3>根节点: {{ bomTreeData.rootPart?.name }}</h3>
           <div class="tree-controls">
             <el-button @click="expandAll">全部展开</el-button>
             <el-button @click="collapseAll">全部收起</el-button>
           </div>
-        </div><el-tree
+        </div>
+        <el-tree
           ref="bomTreeRef"
           :data="bomTreeNodes"
           :props="{ children: 'children', label: 'label' }"
@@ -155,15 +166,16 @@
           show-checkbox
           default-expand-all
           class="bom-tree"
-        >          <template v-slot="{ node, data }">
+        >
+          <template v-slot="{ node, data }">
             <div class="bom-tree-node">
               <div class="node-info">
                 <!-- 优先使用后端返回的名称，如果为空则用masterId从Part列表查找 -->
-                <span class="node-name">{{ 
-                  data.targetPart?.name || 
-                  data.rootPart?.name || 
+                <span class="node-name">{{
+                  data.targetPart?.name ||
+                  data.rootPart?.name ||
                   getPartNameByMasterId(data.targetPart?.masterId) ||
-                  `Part-${data.targetPart?.masterId || 'Unknown'}` 
+                  `Part-${data.targetPart?.masterId || 'Unknown'}`
                 }}</span>
                 <span class="node-quantity" v-if="data.quantity">数量: {{ data.quantity }}</span>
                 <span class="node-designator" v-if="data.referenceDesignator">位号: {{ data.referenceDesignator }}</span>
@@ -189,7 +201,8 @@
           <el-tag type="info">总计: {{ bomListData.summary?.totalItems }} 项</el-tag>
           <el-tag type="success">总数量: {{ bomListData.summary?.totalQuantity }}</el-tag>
           <el-tag type="warning">最大层级: {{ bomListData.summary?.maxLevel }}</el-tag>
-        </div>        <el-table :data="bomListData.items" style="width: 100%" class="tech-table">
+        </div>
+        <el-table :data="bomListData.items" style="width: 100%" class="tech-table">
           <el-table-column prop="level" label="层级" width="80" align="center"></el-table-column>
           <el-table-column prop="sequenceNumber" label="序号" width="80" align="center"></el-table-column>
           <el-table-column prop="partName" label="零件名称"></el-table-column>
@@ -202,7 +215,8 @@
       <div v-else class="empty-state">
         <el-empty description="暂无BOM清单数据"></el-empty>
       </div>
-    </el-dialog>    <!-- 父级使用情况弹窗 -->
+    </el-dialog>
+    <!-- 父级使用情况弹窗 -->
     <el-dialog v-model="whereUsedDialogVisible" title="父级使用情况" width="70%" class="tech-dialog">
       <div v-if="whereUsedData && whereUsedData.length > 0">
         <el-table :data="whereUsedData" style="width: 100%" class="tech-table">
@@ -228,14 +242,16 @@
 
     <!-- 添加BOM关系弹窗 -->
     <el-dialog v-model="addBomDialogVisible" title="添加BOM关系" width="50%" class="tech-dialog">
-      <el-form :model="bomLinkModel" :rules="bomLinkRules" ref="bomLinkFormRef" label-width="120px">        <el-form-item label="父级Part">
+      <el-form :model="bomLinkModel" :rules="bomLinkRules" ref="bomLinkFormRef" label-width="120px">
+        <el-form-item label="父级Part">
           <el-input :value="currentSourcePart?.name + ' (' + (currentSourcePart?.number || currentSourcePart?.masterId) + ')'" disabled></el-input>
-        </el-form-item><el-form-item label="子级Part" prop="target" required>
+        </el-form-item>
+        <el-form-item label="子级Part" prop="target" required>
           <el-select v-model="bomLinkModel.target" placeholder="请选择子级Part" filterable>
-            <el-option 
-              v-for="part in availablePartList" 
-              :key="part.masterId" 
-              :label="`${part.name} (${part.number || part.masterId})`" 
+            <el-option
+              v-for="part in availablePartList"
+              :key="part.masterId"
+              :label="`${part.name} (${part.number || part.masterId})`"
               :value="part.masterId">
             </el-option>
           </el-select>
@@ -263,28 +279,28 @@
       <el-form :model="batchBomModel" ref="batchBomFormRef" label-width="120px">
         <el-form-item label="源Part" prop="sourceVersionId" required>
           <el-select v-model="batchBomModel.sourceVersionId" placeholder="请选择源Part" filterable>
-            <el-option 
-              v-for="part in partList" 
-              :key="part.versionId" 
-              :label="`${part.name} (${part.number}) - V${part.version}.${part.iteration}`" 
+            <el-option
+              v-for="part in partList"
+              :key="part.versionId"
+              :label="`${part.name} (${part.number}) - V${part.version}.${part.iteration}`"
               :value="part.versionId">
             </el-option>
           </el-select>
         </el-form-item>
       </el-form>
-      
+
       <div class="batch-items">
         <div class="items-header">
           <h4>BOM项目列表</h4>
           <el-button @click="addBatchItem">添加项目</el-button>
         </div>
-        
+
         <div v-for="(item, index) in batchBomModel.bomItems" :key="index" class="batch-item">
           <el-form :model="item" :inline="true">
             <el-form-item label="目标Part">
-              <el-select 
-                v-model="item.targetMasterId" 
-                placeholder="请选择零件" 
+              <el-select
+                v-model="item.targetMasterId"
+                placeholder="请选择零件"
                 filterable
                 style="width: 100%"
               >
@@ -314,7 +330,7 @@
           </el-form>
         </div>
       </div>
-      
+
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="batchAddDialogVisible = false">取 消</el-button>
@@ -345,6 +361,7 @@
     </el-dialog>
   </div>
 </template>
+
 <script setup>
 import { ref, onMounted, nextTick, watch, computed } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
@@ -1555,45 +1572,52 @@ const testBomAPI = async () => {
 };
 </script>
 <style scoped>
-.page-wrapper { position: relative; z-index: 1; }
-.top-action-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
-.page-title { font-size: 28px; font-weight: 600; color: #333; }
-.actions { display: flex; align-items: center; }
-.add-button { margin-left: 16px; }
-.action-buttons .el-button { margin: 0 2px; }
-.action-button.disabled {
-  filter: grayscale(1);
-  opacity: 0.5;
-  cursor: not-allowed !important;
+.page-wrapper {
+  position: relative;
+  z-index: 1;
 }
-.action-button.active {
-  filter: none;
-  opacity: 1;
+
+.top-action-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
 }
-.action-button.tree {
-  color: #409eff;
+
+.page-title {
+  font-size: 28px;
+  font-weight: 600;
+  color: #333;
 }
-.action-button.list {
-  color: #67c23a;
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
 }
-.action-button.usage {
-  color: #e6a23c;
+
+.add-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  font-weight: 600;
+  color: #000;
+  background: linear-gradient(90deg, #00bfff 0%, #0affa7 100%);
+  transition: all 0.3s ease;
 }
-.action-button.add {
-  color: #909399;
+.add-button:hover {
+  filter: brightness(1.2);
+  box-shadow: 0 0 15px rgba(10, 255, 167, 0.6);
 }
-.tech-table {
-  font-size: 18px;
-}
-.tech-dialog .el-dialog__body {
-  padding: 20px;
-}
+
+/* 结构树相关样式 */
 .tree-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 16px;
-  padding-bottom: 16px;
+  padding-bottom: 12px;
   border-bottom: 1px solid #e4e7ed;
 }
 .tree-header h3 {
@@ -1606,36 +1630,33 @@ const testBomAPI = async () => {
 }
 .bom-tree {
   border: 1px solid #e4e7ed;
-  border-radius: 4px;
+  border-radius: 6px;
   max-height: 500px;
   overflow-y: auto;
+  padding: 12px;
 }
 .bom-tree-node {
   display: flex;
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  padding: 4px 8px;
-  min-height: 32px;
+  padding: 6px 10px;
+  min-height: 36px;
+  border-radius: 4px;
+  transition: background-color 0.3s;
 }
-.tree-node {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  padding: 4px 0;
+.bom-tree-node:hover {
+  background-color: #f5f7fa;
 }
 .node-info {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   flex: 1;
 }
 .node-name {
   font-weight: 500;
-}
-.node-number {
-  color: #666;
+  color: #333;
 }
 .node-quantity {
   color: #409eff;
@@ -1645,40 +1666,77 @@ const testBomAPI = async () => {
   color: #67c23a;
   font-size: 12px;
 }
+.node-id {
+  color: #999;
+  font-size: 12px;
+  margin-left: 8px;
+}
 .node-actions {
   display: flex;
-  gap: 4px;
+  gap: 6px;
   flex-shrink: 0;
   margin-left: auto;
 }
-.list-summary {
-  display: flex;
-  gap: 12px;
-  margin-bottom: 16px;
-  padding: 12px;
-  background-color: #f5f7fa;
-  border-radius: 4px;
+
+/* 表格样式 */
+.tech-table {
+  background: transparent !important;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #e4e7ed;
 }
-.empty-state {
-  text-align: center;
-  padding: 40px 0;
+.tech-table :deep(th.el-table__cell) {
+  background: rgba(0, 191, 255, 0.15) !important;
+  color: #333;
+  font-weight: 600;
+  border-bottom: 1px solid #409eff;
 }
-.batch-items {
-  margin-top: 20px;
-}
-.items-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
-  padding-bottom: 8px;
+.tech-table :deep(td.el-table__cell) {
   border-bottom: 1px solid #e4e7ed;
 }
-.batch-item {
-  padding: 16px;
-  border: 1px solid #e4e7ed;
-  border-radius: 4px;
-  margin-bottom: 12px;
-  background-color: #fafafa;
+.tech-table :deep(tr) {
+  background: transparent !important;
+  color: #606266;
+  transition: background-color 0.3s;
+}
+.tech-table :deep(tr:hover > td.el-table__cell) {
+  background: rgba(0, 191, 255, 0.1) !important;
+}
+.tech-table :deep(.el-table__inner-wrapper::before) {
+  display: none;
+}
+
+/* 操作按钮悬停提示样式 */
+.action-button {
+  font-size: 18px;
+  transition: all 0.2s;
+  padding: 4px;
+  /* 立即显示提示信息 */
+  pointer-events: auto;
+}
+.action-button.disabled {
+  filter: grayscale(1);
+  opacity: 0.5;
+  cursor: not-allowed !important;
+}
+.action-button.active {
+  filter: none;
+  opacity: 1;
+}
+.action-button.tree { color: #409eff; }
+.action-button.list { color: #67c23a; }
+.action-button.usage { color: #e6a23c; }
+.action-button.add { color: #909399; }
+</style>
+
+<!-- 全局样式 -->
+<style>
+.el-message-box.tech-messagebox {
+  background: #fff !important;
+  border: 1px solid #e4e7ed !important;
+}
+.tech-messagebox .el-message-box__title,
+.tech-messagebox .el-message-box__content {
+  color: #333 !important;
 }
 </style>
