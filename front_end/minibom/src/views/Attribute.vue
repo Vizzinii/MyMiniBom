@@ -41,8 +41,8 @@
       </el-table>
   
       <!-- 添加/编辑属性的弹窗 -->
-      <el-dialog v-model="dialogVisible" :title="dialogTitle" width="40%" class="tech-dialog">
-        <el-form :model="attributeModel" label-width="100px" label-position="top">
+      <el-dialog v-model="dialogVisible" :title="dialogTitle" width="50%" class="tech-dialog">
+        <el-form :model="attributeModel" label-width="100px">
           <el-form-item label="中文名称">
             <el-input v-model="attributeModel.name"></el-input>
           </el-form-item>
@@ -62,8 +62,8 @@
         </el-form>
         <template #footer>
           <span class="dialog-footer">
-            <el-button class="reset-button" @click="dialogVisible = false">取 消</el-button>
-            <el-button class="add-button" @click="onSubmit">确 认</el-button>
+            <el-button @click="dialogVisible = false">取消</el-button>
+            <el-button type="primary" @click="onSubmit">确认</el-button>
           </span>
         </template>
       </el-dialog>
@@ -88,9 +88,9 @@
   const dialogTitle = ref('');
   const attributeModel = ref({
       id: null,
+      code: '',
       name: '',
       nameEn: '',
-      type: 'STRING',
       description: ''
   });
   
